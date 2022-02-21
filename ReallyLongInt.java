@@ -7,54 +7,38 @@
 public class ReallyLongInt 	extends LinkedListPlus<Integer> 
 							implements Comparable<ReallyLongInt>
 {
+	// Used to create a ReallyLongInt of value = 0
 	private ReallyLongInt() {
 		super();
 		add(0);
 	}
 
-	// Data is stored with the LEAST significant digit first in the list.  This is
-	// done by adding all digits at the front of the list, which reverses the order
-	// of the original string.  Note that because the list is doubly-linked and 
-	// circular, we could have just as easily put the most significant digit first.
-	// You will find that for some operations you will want to access the number
-	// from least significant to most significant, while in others you will want it
-	// the other way around.  A doubly-linked list makes this access fairly
-	// straightforward in either direction.
+	// Constructor to parse a string argument into a ReallyLongInt
 	public ReallyLongInt(String s){
 		super();
 		char c;
 		int digit = -1;
-		// Iterate through the String, getting each character and converting it into
-		// an int.  Then make an Integer and add at the front of the list.  Note that
-		// the add() method (from A2LList) does not need to traverse the list since
-		// it is adding in position 1.  Note also the the author's linked list
-		// uses index 1 for the front of the list.
 		for (int i = 0; i < s.length(); i++)
 		{
 			c = s.charAt(i);
 			if (('0' <= c) && (c <= '9'))
 			{
 				digit = c - '0';
-				// Do not add leading 0s
 				if (!(digit == 0 && this.getLength() == 0)) 
 					this.add(1, Integer.valueOf(digit));
 			}
 			else throw new NumberFormatException("Illegal digit " + c);
 		}
-		// If number is all 0s, add a single 0 to represent it
 		if (digit == 0 && this.getLength() == 0)
 			this.add(1, Integer.valueOf(digit));
 	}
 
-	// Copy constructor can just call super()
+	// Constructor to copy another ReallyLongInt
 	public ReallyLongInt(ReallyLongInt rightOp) {
 		super(rightOp);
 	}
-	
-	// Constructor with a long argument.  You MUST create the ReallyLongInt
-	// digits by parsing the long argument directly -- you cannot convert to a String
-	// and call the constructor above.  As a hint consider the / and % operators to
-	// extract digits from the long value.
+
+	// Constructor to parse a long argument into a ReallyLongInt
 	public ReallyLongInt(long X) {
 		if (X == 0) add(0);
 		while (X > 0) {
@@ -63,10 +47,8 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 			X = temp / 10;
 		}
 	}
-	
-	// Method to put digits of number into a String.  Note that toString()
-	// has already been written for LinkedListPlus, but you need to
-	// override it to show the numbers in the way they should appear.
+
+	// Overrides the toString method of LinkedListPlus
 	public String toString() {
 		Node curr = this.firstNode;
 		String output = "";
@@ -77,10 +59,6 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		return output;
 	}
 
-	// See notes in the Assignment sheet for the methods below.  Be sure to
-	// handle the (many) special cases.  Some of these are demonstrated in the
-	// RLITest.java program.
-
 	// Return new ReallyLongInt which is sum of current and argument
 	public ReallyLongInt add(ReallyLongInt rightOp) {
 
@@ -89,6 +67,7 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		int carry = 0;
 		int smaller;
 
+		// Setting sum = the larger of the two ReallyLongInts
 		if (this.numberOfEntries > rightOp.numberOfEntries) {
 			sum = new ReallyLongInt(this);
 			curr2 = rightOp.firstNode;
@@ -101,6 +80,7 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		}
 		curr1 = sum.firstNode;
 
+		// Adding the smaller ReallyLongInt to sum
 		for (int i = 0; i < sum.numberOfEntries; i++) {
 			if (i < smaller) {
 				int val = curr1.data + curr2.data + carry;
@@ -122,6 +102,8 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 			curr1 = curr1.next;
 			curr2 = curr2.next;
 		}
+
+		// If any carry digits are left over add another digit
 		if (carry == 1) {
 			sum.add(1);
 		}
@@ -130,7 +112,8 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 	
 	// Return new ReallyLongInt which is difference of current and argument
 	public ReallyLongInt subtract(ReallyLongInt rightOp) {
-		
+
+		// If this < rightOp
 		if (compareTo(rightOp) == -1) throw new ArithmeticException();
 
 		ReallyLongInt diff = new ReallyLongInt(this);
@@ -156,11 +139,9 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 				}
 				curr1.data += 10 - curr2.data;				
 			} else curr1.data -= curr2.data;
-			
 			curr1 = curr1.next;
 			curr2 = curr2.next;
 		}
-		
 		// Removing insignificant zeroes
 		curr1 = diff.firstNode.prev;
 		while (curr1.data == 0 && diff.numberOfEntries > 1) {
@@ -172,7 +153,7 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		return diff;
 	}
 
-	// Return new ReallyLongInt which is product of current and argument
+	// Multiplies this ReallyLongInt by rightOp
 	public ReallyLongInt multiply(ReallyLongInt rightOp) {
 
 		ReallyLongInt product = new ReallyLongInt();
@@ -184,9 +165,8 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 			int nextPow = power + 1;
 			for (int k = 0; k < rightOp.numberOfEntries; k++) {
 				ReallyLongInt temp = new ReallyLongInt(curr1.data * curr2.data);
-				for (int j = 0; j < power; j++) {
+				for (int j = 0; j < power; j++)
 					if (!temp.toString().equals("0")) temp.add(1,0);
-				}
 				product = product.add(temp);
 				curr2 = curr2.next;
 				power++;
@@ -196,10 +176,39 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		}
 		return product;
 	}
-	
-	// Return -1 if current ReallyLongInt is less than rOp
-	// Return 0 if current ReallyLongInt is equal to rOp
-	// Return 1 if current ReallyLongInt is greater than rOp
+
+	// Stub method for recursiveDivision, also checks the special cases
+	public ReallyLongInt divide(ReallyLongInt divisor) {
+		if (divisor.equals(new ReallyLongInt(0))) throw new ArithmeticException();
+		if (this.equals(divisor)) return new ReallyLongInt(1);
+		ReallyLongInt quotient = recursiveDivision(new ReallyLongInt(0), divisor);
+		// Really should not have to have this line (180) but I kept running into errors without it
+		if (compareTo(quotient.multiply(divisor)) == -1) quotient = quotient.subtract(new ReallyLongInt(1));
+		return quotient;
+	}
+
+	// Recursive division method
+		// Returns the quotient through a series of multiplications by some base (in this case base = 2)
+		// Each recursive case finds the largest power of 2 that can be multiplied by the divisor and added 
+		// to the quotient without exceeding the dividend
+		// Returns the new value of the quotient with each recursive call
+	private ReallyLongInt recursiveDivision(ReallyLongInt quotient, ReallyLongInt divisor) {
+		
+		ReallyLongInt prev = new ReallyLongInt(1);
+		ReallyLongInt base = new ReallyLongInt(2);
+		ReallyLongInt total = quotient.multiply(divisor);
+		
+		// Base case (if total >= dividend)
+		if (compareTo(total.add(divisor)) != 1) 
+			return new ReallyLongInt(1);
+		// Recursive case
+		while (compareTo(total.add(prev.multiply(base).multiply(divisor))) == 1) 
+			prev = prev.multiply(base);
+		return recursiveDivision(quotient.add(prev), divisor).add(prev);
+		
+	}
+
+	// Return 1 if this > rOp, -1 if rOp > this, 0 if equal
 	public int compareTo(ReallyLongInt rOp) {
 		if (this.numberOfEntries > rOp.numberOfEntries) return 1;
 		else if (this.numberOfEntries < rOp.numberOfEntries) return -1;
@@ -214,12 +223,8 @@ public class ReallyLongInt 	extends LinkedListPlus<Integer>
 		return 0;
 	}
 
-	// Is current ReallyLongInt equal to rightOp?  Note that the argument
-	// in this case is Object rather than ReallyLongInt.  It is written
-	// this way to correctly override the equals() method defined in the
-	// Object class.
+	// Returns true if rightOp == this, false otherwise
 	public boolean equals(Object rightOp) {
-		System.out.println("checking equality");
 		ReallyLongInt copy = (ReallyLongInt) rightOp;
 		if (this.numberOfEntries != copy.numberOfEntries) return false;
 		Node curr1 = this.firstNode;

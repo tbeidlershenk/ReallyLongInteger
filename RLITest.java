@@ -166,5 +166,54 @@ public class RLITest
 		
 		R3 = R2.multiply(R1);
 		System.out.println(R2 + " * " + R1 + " = " + R3);	
+
+		// Testing divide method, all code above is unchanged
+
+		System.out.println("\nTesting divide method:\n");
+
+		R1 = new ReallyLongInt("63");
+		R2 = new ReallyLongInt("7");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("28875365");
+		R2 = new ReallyLongInt("3065");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("63298293");
+		R2 = new ReallyLongInt("63298293");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("54");
+		R2 = new ReallyLongInt("4");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("590239084320");
+		R2 = new ReallyLongInt("8479537894");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("8479537894");
+		R2 = new ReallyLongInt("590239084320");
+		RLITest.printDivision(R1, R2);
+
+		R1 = new ReallyLongInt("10398923");
+		R2 = new ReallyLongInt("0");
+		RLITest.printDivision(R1, R2);
+	}
+
+	// Used to print results of a division of two ReallyLongInts
+		// If the divisor is 0, catches an ArithmeticException
+	// If the numbers divide: prints R1 / R2 = result
+	// Else: prints that they don't divide, and the remainder of the division
+		// If divisor is greater than dividend, the remainder = the dividend
+	public static void printDivision (ReallyLongInt R1, ReallyLongInt R2) {
+		try {
+			ReallyLongInt result = R1.divide(R2);
+			if (result.multiply(R2).equals(R1))
+				System.out.println(R1.toString() + " / " + R2.toString() + " = " + result.toString());
+			else
+				System.out.println(R2.toString() + " does not divide " + R1.toString() + "\nRemainder: " + R1.subtract(result.multiply(R2)).toString());					
+		} catch (ArithmeticException e) { 
+			System.out.println("Divide by zero error"); 
+		}
 	}
 }

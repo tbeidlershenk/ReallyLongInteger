@@ -129,20 +129,4 @@ public class LinkedListPlus<T> extends A2LList<T>
 			else curr = curr.next;
 		this.firstNode = curr;
 	}	
-
-	// FOR TESTING
-	private void printList () {
-		Node curr = this.firstNode.prev.prev.prev;
-		System.out.println();
-		for (int i = 0; i < this.numberOfEntries; i++) {
-			System.out.print(curr.data.toString() + " ");
-			curr = curr.prev;
-		}
-		System.out.println("\n");
-	}
-
-	private void printPos (boolean forward) {
-		if (forward) System.out.println(loc += 1);
-		else System.out.println(loc -= 1);
-	}
 }
